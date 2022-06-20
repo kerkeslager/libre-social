@@ -18,12 +18,27 @@
         font-size: 24px;
       }
 
-      h1, h2, h3, h4, h5, header, nav, footer, a.edit {
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      header,
+      nav,
+      footer,
+      a.edit,
+      button,
+      input[type=submit] {
         font-family: 'Work Sans', sans-serif;
       }
 
       a.edit {
         font-size: 18px;
+      }
+
+      a.edit:hover {
+        font-size: 20px;
+        transition: 200ms ease-in-out;
       }
 
       html, body {
@@ -50,8 +65,33 @@
       a:active,
       a:hover,
       a:link,
-      a.visited {
+      a:visited {
+        display: inline-block;
         color: black;
+        text-decoration-thickness: 2px;
+        transition: 200ms ease-in-out;
+      }
+
+      button, input[type=submit] {
+        background: white;
+        border: 2px solid black;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        padding: 0.2rem 0.6rem;
+        cursor: pointer;
+        transition: 200ms ease-in-out;
+      }
+
+      a:hover, button:hover, input[type=submit]:hover {
+        font-weight: bold;
+        font-size: 28px;
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        transition: 200ms ease-in-out;
+      }
+
+      button:hover, input[type=submit]:hover {
+        border: 3px solid black;
       }
 
       body > main {
@@ -81,6 +121,13 @@
       body > nav > :last-child {
         margin-left: auto;
         margin-right: 1rem;
+      }
+
+      body > nav > span {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        align-items: center;
       }
 
       body > footer {
@@ -128,6 +175,24 @@
       body > main > header > h1 {
         margin-bottom: 0;
       }
+
+      body > footer svg {
+        width: 24px;
+        height: 24px;
+        transition: 500ms ease-in-out;
+      }
+
+      body > footer svg:hover {
+        animation: heartbeat 1s ease-in-out infinite;
+      }
+
+      @keyframes heartbeat {
+        0% { width: 24px; height: 24px; }
+        50% { width: 24px; height: 24px; }
+        66% { width: 36px; height: 36px; }
+        84% { width: 36px; height: 36px; }
+        100% { width: 24px; height: 24px; }
+      }
     </style>
 
   </head>
@@ -138,11 +203,14 @@
       <a href='{% url "donate" %}'>Donate</a>
       {% if request.user.is_authenticated %}
         <span>
-          Logged in as <a href='{% url "me" %}'>{{ request.user.username }}</a>.
+          <span>Logged in as <a href='{% url "me" %}'>{{ request.user.username }}</a>.</span>
           <a href='{% url "logout" %}'>Log out</a>
         </span>
       {% else %}
-        <a href='{% url "login" %}'>Log in</a>
+        <span>
+          <a href='{% url "login" %}'>Log in</a>
+          <a href='{% url "register" %}'>Register</a>
+        </span>
       {% endif %}
     </nav>
 
