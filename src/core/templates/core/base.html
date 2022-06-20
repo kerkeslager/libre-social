@@ -1,0 +1,170 @@
+<!doctype html>
+
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <title>Libre Social</title>
+
+    <link rel='stylesheet'
+          href='https://fonts.googleapis.com/css2?family=Work+Sans' />
+    <link rel='stylesheet'
+          href='https://fonts.googleapis.com/css2?family=Rasa' />
+
+    <style>
+      html {
+        font-family: 'Rasa', serif;
+        font-size: 24px;
+      }
+
+      h1, h2, h3, h4, h5, header, nav, footer, a.edit {
+        font-family: 'Work Sans', sans-serif;
+      }
+
+      a.edit {
+        font-size: 18px;
+      }
+
+      html, body {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      h1, h2, h3, h4, h5, p {
+        margin: 0;
+        padding: 0;
+        margin-bottom: 1rem;
+      }
+
+      p:last-child {
+        margin-bottom: 0;
+      }
+
+      a,
+      a:active,
+      a:hover,
+      a:link,
+      a.visited {
+        color: black;
+      }
+
+      body > main {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        margin-top: 1rem;
+        max-width: 40rem;
+        width: calc(100% - 2rem);
+      }
+
+      body > nav {
+        width: 100%;
+        display: flex;
+
+        border-bottom: 2px solid black;
+
+        flex-direction: row;
+        align-items: center;
+      }
+
+      body > nav > * {
+        margin: 1rem 0 1rem 1rem;
+      }
+
+      body > nav > :last-child {
+        margin-left: auto;
+        margin-right: 1rem;
+      }
+
+      body > footer {
+        width: 100%;
+        border-top: 2px solid black;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+      }
+
+      body > footer > * {
+        margin: 1rem 0.5rem;
+      }
+
+      h1.anonymous {
+        color: #999999;
+        font-style: italic;
+        font-weight: lighter;
+      }
+
+      div.empty {
+        color: #999999;
+        font-style: italic;
+        font-weight: lighter;
+      }
+
+      /* Sticky footer */
+      html { height: 100%; }
+      body {
+        min-height: 100%;
+        justify-content: flex-start;
+      }
+      body > main { margin-bottom: 1rem; }
+      body > footer { margin-top: auto; }
+
+      body > main > header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      body > main > header > h1 {
+        margin-bottom: 0;
+      }
+    </style>
+
+  </head>
+
+  <body>
+    <nav>
+      <a href='/'>Home</a>
+      <a href='{% url "donate" %}'>Donate</a>
+      {% if request.user.is_authenticated %}
+        <span>
+          Logged in as <a href='{% url "me" %}'>{{ request.user.username }}</a>.
+          <a href='{% url "logout" %}'>Log out</a>
+        </span>
+      {% else %}
+        <a href='{% url "login" %}'>Log in</a>
+      {% endif %}
+    </nav>
+
+    <main>{% block main %}{% endblock %}</main>
+
+    <footer>
+      Powered by love.
+
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z" />
+      </svg>
+    </footer>
+  </body>
+</html>
+
