@@ -1,19 +1,65 @@
 {% extends 'core/base.html' %}
 
-{% block main %}
-  <header>
-    {% if object.name %}
-      <h1>{{ object.name }}</h1>
-    {% else %}
-      <h1 class='empty'>(anonymous user)</h1>
-    {% endif %}
+{% block after %}
+<script type='text/babel'>
+  class API {
+    static request(method, path, handlers) {
+      let xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if(this.readyState === 4) handlers[this.status](
+          this.status,
+          JSON.parse(xhr.responseText),
+        );
+      };
+      xhr.open(method, path, true);
+      xhr.send();
+    }
 
-    {% if request.user == object %}<a class='edit' href=''>Edit</a>{% endif %}
-  </header>
+    static get(path, handlers) {
+      return API.request('get', path, handlers);
+    }
+  }
 
-  {% if object.description %}
-    <div>{{ object.description }}</div>
-  {% else %}
-    <div class='empty'>(description empty)</div>
-  {% endif %}
+  class Profile extends React.Component {
+    constructor(props) {
+      super(props);
+
+      this.state = { user: null };
+
+      API.get('/api/user/' + this.props.id, {
+        200: (status, data) => this.setState({user: data}),
+      });
+    }
+
+    render() {
+      if(this.state.user === null) return null;
+
+      let getEmptyClass = content => {
+        if(content) {
+          return null;
+        } else {
+          return 'empty';
+        }
+      }
+
+      return [
+        <header>
+          <h1 className={ getEmptyClass(this.state.user.name) }>
+            { this.state.user.name || '(anonymous user)' }
+          </h1>
+          { this.state.user.isCurrentUser && <a className='edit'>{ 'Edit' }</a> }
+        </header>,
+        <section className={ getEmptyClass(this.state.user.description) }>
+          { this.state.user.description || '(no description)' }
+          { this.state.user.isCurrentUser && <a className='edit'>{ 'Edit' }</a> }
+        </section>
+      ];
+    }
+  }
+
+  ReactDOM.render(
+    <Profile id={'{{object.pk}}'}/>,
+    document.querySelector('main')
+  );
+</script>
 {% endblock %}

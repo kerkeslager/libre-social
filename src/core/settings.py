@@ -130,3 +130,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/u/me'
 LOGOUT_REDIRECT_URL = '/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'core.renderers.CamelCaseJSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ]
+}
