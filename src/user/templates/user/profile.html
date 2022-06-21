@@ -1,7 +1,9 @@
 {% extends 'core/base.html' %}
 
 {% block after %}
-<script type='text/babel'>
+<script data-plugins="transform-es2015-modules-umd" type='text/babel'>
+  import ReactMarkdown from 'ReactMarkdown';
+
   class API {
     static request(method, path, handlers) {
       let xhr = new XMLHttpRequest();
@@ -50,7 +52,7 @@
           { this.state.user.isCurrentUser && <a className='edit'>{ 'Edit' }</a> }
         </header>,
         <section className={ getEmptyClass(this.state.user.description) }>
-          { this.state.user.description || '(no description)' }
+          { this.state.user.description && <ReactMarkdown children={this.state.user.description} /> || '(no description)' }
           { this.state.user.isCurrentUser && <a className='edit'>{ 'Edit' }</a> }
         </section>
       ];
