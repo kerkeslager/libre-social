@@ -12,13 +12,14 @@
     <link rel='stylesheet'
           href='https://fonts.googleapis.com/css2?family=Rasa' />
 
-    {% if settings.DEBUG %}
+    {% if DEBUG %}
       <script src='https://unpkg.com/react@18.2.0/umd/react.development.js' crossorigin></script>
+      <script src='https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js' crossorigin></script>
     {% else %}
       <script src='https://unpkg.com/react@18.2.0/umd/react.production.min.js' crossorigin></script>
+      <script src='https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js' crossorigin></script>
     {% endif %}
 
-    <script src='https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js' crossorigin></script>
     <script src='https://unpkg.com/babel-standalone@6.26.0/babel.min.js' crossorigin></script>
 
     <script data-plugins="transform-es2015-modules-umd"
@@ -40,7 +41,11 @@
       footer,
       a.edit,
       button,
-      input[type=submit] {
+      .character-counter,
+      input[type=password],
+      input[type=submit],
+      input[type=text],
+      textarea {
         font-family: 'Work Sans', sans-serif;
       }
 
@@ -51,6 +56,19 @@
       a.edit:hover {
         font-size: 20px;
         transition: 200ms ease-in-out;
+      }
+
+      .character-counter {
+        font-size: 24px;
+        font-weight: normal;
+      }
+
+      .character-counter.close {
+        color: #DDBB00;
+      }
+
+      .character-counter.over {
+        color: #CC0000;
       }
 
       html, body {
@@ -69,6 +87,20 @@
         margin-bottom: 1rem;
       }
 
+      h1, h2, h3, h4, h5 { font-weight: bold; }
+      h1 { font-weight: bold; font-size: 2rem; }
+      h2 { font-weight: bold; font-size: 1.75rem; }
+      h3 { font-weight: bold; font-size: 1.5rem; }
+      h4 { font-weight: bold; font-size: 1.25rem; }
+      h5 { font-weight: bold; font-size: 1rem; }
+
+      input[type=password],
+      input[type=text],
+      textarea {
+        font-size: inherit;
+        font-weight: inherit;
+      }
+
       p:last-child {
         margin-bottom: 0;
       }
@@ -83,6 +115,34 @@
         text-decoration: underline;
         text-decoration-thickness: 2px;
         transition: 200ms ease-in-out;
+      }
+
+      h1 form {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      h1 form input[type=text ] {
+        height: 57px;
+      }
+
+      section form {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem 1rem;
+      }
+
+      textarea {
+        border: 2px solid black;
+        border-radius: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        width: 30rem;
+        height: calc(30rem / 1.618); /* golden ratio */
       }
 
       button, input[type=submit] {
@@ -113,7 +173,7 @@
         gap: 1rem;
 
         margin-top: 1rem;
-        max-width: 40rem;
+        max-width: 30rem;
         width: calc(100% - 2rem);
       }
 

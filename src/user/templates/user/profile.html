@@ -4,8 +4,33 @@
 <script data-plugins="transform-es2015-modules-umd" type='text/babel'>
   import ReactMarkdown from 'ReactMarkdown';
 
+  class Cookie {
+    static get(key) {
+        var cookieArr = document.cookie.split(";");
+
+        for(var i = 0; i < cookieArr.length; i++) {
+            var cookiePair = cookieArr[i].split("=");
+
+            if(key === cookiePair[0].trim()) {
+                return decodeURIComponent(cookiePair[1]);
+            }
+        }
+
+        return null;
+    }
+
+    static set(key, value, maxAge) {
+      var cookie = key + "=" + encodeURIComponent(value);
+      if(typeof maxAge === "number") {
+          cookie += "; max-age=" + maxAge;
+      }
+      cookie += '; secure';
+      document.cookie = cookie;
+    }
+  }
+
   class API {
-    static request(method, path, handlers) {
+    static request(method, path, body, handlers) {
       let xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function() {
         if(this.readyState === 4) handlers[this.status](
@@ -14,11 +39,131 @@
         );
       };
       xhr.open(method, path, true);
-      xhr.send();
+
+      if(method === 'post') {
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("X-CSRFToken", Cookie.get('csrftoken'));
+      }
+
+      xhr.send(body);
     }
 
     static get(path, handlers) {
-      return API.request('get', path, handlers);
+      return API.request('get', path, '', handlers);
+    }
+
+    static post(path, parameters, handlers) {
+      return API.request('post', path, JSON.stringify(parameters), handlers);
+    }
+  }
+
+  const CharacterCounter = (props) => {
+    let className = 'character-counter';
+    let ratio = props.current / props.max;
+    if(0.95 <= ratio && ratio <= 1) className += ' close';
+    if(1 < ratio) className += ' over';
+
+    return <span className={className}>{ props.current + '/' + props.max }</span>;
+  };
+
+  class EditableHeader extends React.Component {
+    constructor(props) {
+      super(props);
+
+      this.state = {
+        editing: false,
+        length: this.props.content.length,
+      };
+    }
+
+    render() {
+      if(this.state.editing) {
+        let onSubmit = e => {
+          e.preventDefault();
+
+          let value = e.target.querySelector('input').value;
+
+          if(value.length > this.props.maxLength) {
+            return;
+          }
+
+          this.props.onEdit(value);
+          this.setState({ editing: false });
+        };
+
+        let onChange = e => this.setState({ length: e.target.value.length });
+
+        return <h1>
+          <form onSubmit={onSubmit}>
+            <input type='text' defaultValue={this.props.content} onChange={onChange}></input>
+            <CharacterCounter current={this.state.length} max={this.props.maxLength}/>
+            <input type='submit' value='Save'></input>
+          </form>
+        </h1>;
+      }
+
+      let performEdit = () => this.setState({ editing: true });
+      if(this.props.content) {
+        return [
+          <h1>{ this.props.content }</h1>,
+          <a className='edit' onClick={performEdit}>{ 'Edit' }</a>,
+        ];
+      }
+      return [
+        <h1 className='empty'>{'(anonymous user)'}</h1>,
+        <a className='edit' onClick={performEdit}>{ 'Edit' }</a>,
+      ];
+    }
+  }
+
+  class EditableMarkdownArea extends React.Component {
+    constructor(props) {
+      super(props);
+
+      this.state = {
+        editing: false,
+        length: this.props.content.length,
+      };
+    }
+
+    render() {
+      if(this.state.editing) {
+        let onSubmit = e => {
+          e.preventDefault();
+
+          let value = e.target.querySelector('textarea').value;
+
+          if(value.length > this.props.maxLength) {
+            return;
+          }
+
+          this.props.onEdit(value);
+          this.setState({ editing: false });
+        };
+
+        let onChange = e => this.setState({ length: e.target.value.length });
+
+        return <section>
+          <form onSubmit={onSubmit}>
+            <textarea defaultValue={this.props.content} onChange={onChange}></textarea>
+            <CharacterCounter current={this.state.length} max={this.props.maxLength}/>
+            <input type='submit' value='Save'></input>
+          </form>
+        </section>;
+      }
+
+      let performEdit = () => this.setState({ editing: true });
+
+      if(this.props.content) {
+        return [
+          <section><ReactMarkdown>{ this.props.content }</ReactMarkdown></section>,
+          <a className='edit' onClick={performEdit}>{ 'Edit' }</a>,
+        ];
+      }
+      return [
+        <section className='empty'>{'(no description)'}</section>,
+        <a className='edit' onClick={performEdit}>{ 'Edit' }</a>,
+      ];
     }
   }
 
@@ -44,24 +189,51 @@
         }
       }
 
+      let editName = name => {
+        API.post('/api/user/' + this.props.id, { name: name }, {
+          200: (status, data) => {
+            this.setState({ user: data });
+          }
+        });
+      };
+
+      let editDescription = description => {
+        API.post('/api/user/' + this.props.id, { description: description }, {
+          200: (status, data) => {
+            this.setState({ user: data });
+          },
+          400: (status, data) => {
+            console.log(data);
+          }
+        });
+      };
+
+      if(this.state.user.isCurrentUser) {
+        return [
+          <header>
+            <EditableHeader content={this.state.user.name} maxLength={256} onEdit={editName}/>
+          </header>,
+          <EditableMarkdownArea content={this.state.user.description} maxLength={4096} onEdit={editDescription}/>
+        ];
+      }
+
       return [
         <header>
           <h1 className={ getEmptyClass(this.state.user.name) }>
             { this.state.user.name || '(anonymous user)' }
           </h1>
-          { this.state.user.isCurrentUser && <a className='edit'>{ 'Edit' }</a> }
         </header>,
         <section className={ getEmptyClass(this.state.user.description) }>
           { this.state.user.description && <ReactMarkdown children={this.state.user.description} /> || '(no description)' }
-          { this.state.user.isCurrentUser && <a className='edit'>{ 'Edit' }</a> }
         </section>
       ];
     }
   }
 
-  ReactDOM.render(
-    <Profile id={'{{object.pk}}'}/>,
+  ReactDOM.createRoot(
     document.querySelector('main')
+  ).render(
+    <Profile id={'{{object.pk}}'}/>,
   );
 </script>
 {% endblock %}
