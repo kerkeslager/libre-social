@@ -171,6 +171,47 @@
     }
   }
 
+  const Circle = props => {
+      let style = {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: '0.3rem'
+      };
+
+      let circleStyle = {
+        borderRadius: "50%",
+        border: "0.2rem solid #" + props.circle.color,
+        height: "1rem",
+        width: "1rem",
+      };
+
+      return <span style={style}>
+        <div style={circleStyle}></div>
+        { props.circle.name }
+      </span>;
+  };
+
+  const Connections = props => {
+    if(!(props.connections)) {
+      return <nav><button>{ 'Add' }</button></nav>;
+    }
+
+    let style={
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: '1rem'
+    };
+
+    return <nav style={style}>
+      <span>{ "In circle(s):" }</span>
+      {
+        props.connections.map((circle, index) => <Circle key={index} circle={circle}/>)
+      }
+    </nav>;
+  };
+
   class Profile extends React.Component {
     constructor(props) {
       super(props);
@@ -227,6 +268,7 @@
             { this.state.user.name || '(anonymous user)' }
           </h1>
         </header>,
+        <Connections connections={this.state.user.connections}/>,
         <section className={ getEmptyClass(this.state.user.description) }>
           { this.state.user.description && <ReactMarkdown children={this.state.user.description} /> || '(no description)' }
         </section>

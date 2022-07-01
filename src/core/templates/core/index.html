@@ -1,6 +1,17 @@
 {% extends 'core/base.html' %}
 
 {% block main %}
-Goodnight, moon
+  {% if request.user.is_authenticated %}
+    {% for circle in request.user.circles.all %}
+      <div style='display: flex; align-items: center; gap: 1rem;'>
+        <div style='border-radius: 50%; border: 1rem solid #{{circle.color}}; width: 7rem; height: 7rem;'></div>
+        <h2>{{ circle.name }}</h2>
+      </div>
+    {% empty %}
+      You don't have any circles.
+    {% endfor %}
+  {% else %}
+    Hello there!
+  {% endif %}
 {% endblock %}
 
