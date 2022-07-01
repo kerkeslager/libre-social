@@ -2,11 +2,11 @@ from rest_framework import viewsets
 
 from . import models, serializers
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = models.User.objects.all()
-    serializer_class = serializers.UserSerializer
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = models.Profile.objects.all()
+    serializer_class = serializers.ProfileSerializer
 
-user_detail_view = UserViewSet.as_view({
+profile_detail_view = ProfileViewSet.as_view({
     'get': 'retrieve',
     'post': 'partial_update',
 })

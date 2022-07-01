@@ -70,9 +70,11 @@
     constructor(props) {
       super(props);
 
+      let initLength = this.props.content ? this.props.content.length : 0;
+
       this.state = {
         editing: false,
-        length: this.props.content.length,
+        length: initLength,
       };
     }
 
@@ -120,9 +122,11 @@
     constructor(props) {
       super(props);
 
+      let initLength = this.props.content ? this.props.content.length : 0;
+
       this.state = {
         editing: false,
-        length: this.props.content.length,
+        length: initLength,
       };
     }
 

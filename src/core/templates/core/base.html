@@ -84,8 +84,9 @@
       h1, h2, h3, h4, h5, p {
         margin: 0;
         padding: 0;
-        margin-bottom: 1rem;
       }
+
+      ul, ol { margin-top: 0; margin-bottom:0; }
 
       h1, h2, h3, h4, h5 { font-weight: bold; }
       h1 { font-weight: bold; font-size: 2rem; }
@@ -128,6 +129,12 @@
         height: 57px;
       }
 
+      section {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
       section form {
         display: flex;
         flex-direction: row;
@@ -135,6 +142,16 @@
         align-items: center;
         justify-content: space-between;
         gap: 0.5rem 1rem;
+      }
+
+      section.settings {
+        border: 2px solid black;
+        padding: 1rem;
+      }
+
+      section.settings form {
+        flex-direction: column;
+        align-items: flex-start;
       }
 
       textarea {
@@ -155,7 +172,13 @@
         transition: 200ms ease-in-out;
       }
 
-      a:hover, button:hover, input[type=submit]:hover {
+      button:disabled, input[type=submit]:disabled {
+        color: #999999;
+        border-color: #999999;
+        cursor: not-allowed;
+      }
+
+      a:hover, button:enabled:hover, input[type=submit]:enabled:hover {
         font-weight: bold;
         font-size: 28px;
         text-decoration: underline;
@@ -163,7 +186,7 @@
         transition: 200ms ease-in-out;
       }
 
-      button:hover, input[type=submit]:hover {
+      button:enabled:hover, input[type=submit]:enabled:hover {
         border: 3px solid black;
       }
 
@@ -260,6 +283,11 @@
         84% { width: 36px; height: 36px; }
         100% { width: 24px; height: 24px; }
       }
+
+      .errorlist {
+        color: #CC0000;
+      }
+
     </style>
 
   </head>
@@ -271,6 +299,7 @@
       {% if request.user.is_authenticated %}
         <span>
           <span>Logged in as <a href='{% url "me" %}'>{{ request.user.username }}</a>.</span>
+          <a href='{% url "settings" %}'>Settings</a>
           <a href='{% url "logout" %}'>Log out</a>
         </span>
       {% else %}

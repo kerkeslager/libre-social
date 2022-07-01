@@ -2,9 +2,9 @@ from rest_framework import exceptions, serializers
 
 from . import models
 
-class UserSerializer(serializers.ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.User
+        model = models.Profile
         fields = (
             'name',
             'description',
@@ -14,4 +14,4 @@ class UserSerializer(serializers.ModelSerializer):
     is_current_user = serializers.SerializerMethodField()
 
     def get_is_current_user(self, obj):
-        return self.context['request'].user == obj
+        return self.context['request'].user.profile == obj

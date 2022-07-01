@@ -11,10 +11,16 @@ class MeView(DetailView):
 
         return redirect(
             'profile',
-            pk=request.user.id,
+            pk=request.user.profile.id,
         )
 
 class ProfileView(DetailView):
-    model = models.User
+    model = models.Profile
     template_name = 'user/profile.html'
 
+class SettingsView(DetailView):
+    model = models.Profile
+    template_name = 'user/settings.html'
+
+    def get_object(self, queryset=None):
+        return self.request.user
