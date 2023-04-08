@@ -3,10 +3,12 @@
 {% block main %}
   {% if request.user.is_authenticated %}
     {% for circle in request.user.circles.all %}
-      <div style='display: flex; align-items: center; gap: 1rem;'>
-        <div style='border-radius: 50%; border: 1rem solid #{{circle.color}}; width: 7rem; height: 7rem;'></div>
-        <h2>{{ circle.name }}</h2>
-      </div>
+      <a href='{{ circle.get_absolute_url }}'>
+        <div style='display: flex; align-items: center; gap: 1rem;'>
+          <div style='border-radius: 50%; border: 1rem solid #{{circle.color}}; width: 7rem; height: 7rem;'></div>
+          <h2>{{ circle.name }}</h2>
+        </div>
+      </a>
     {% empty %}
       You don't have any circles.
     {% endfor %}

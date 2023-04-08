@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 
 <html lang='en'>
@@ -11,6 +12,8 @@
           href='https://fonts.googleapis.com/css2?family=Work+Sans' />
     <link rel='stylesheet'
           href='https://fonts.googleapis.com/css2?family=Rasa' />
+
+    <script src='{% static "core/components.js" %}' type='module'></script>
 
     {% if DEBUG %}
       <script src='https://unpkg.com/react@18.2.0/umd/react.development.js' crossorigin></script>

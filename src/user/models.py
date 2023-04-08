@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import signals
 from django.dispatch import receiver
+from django.urls import reverse
 
 class Profile(models.Model):
     id = models.UUIDField(
@@ -48,7 +49,6 @@ def create_circles(sender, instance, created, **kwargs):
             color='bb0000',
         )
 
-
 class Circle(models.Model):
     id = models.UUIDField(
         primary_key = True,
@@ -62,6 +62,16 @@ class Circle(models.Model):
         on_delete=models.CASCADE,
         related_name='circles',
     )
+
+    def __str__(self):
+        return "{}'s {} Circle".format(
+            self.owner.username,
+            self.name,
+        )
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('circle', kwargs={'pk' : self.pk})
 
 class Connection(models.Model):
     id = models.UUIDField(

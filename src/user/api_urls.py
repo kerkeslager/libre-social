@@ -6,4 +6,5 @@ app_name = 'api'
 
 urlpatterns = [
     path('<uuid:pk>', views.profile_detail_view, name='user'),
+    path('me/delete', views.delete_view, name='delete-user')
 ]

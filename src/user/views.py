@@ -24,3 +24,10 @@ class SettingsView(DetailView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+class CircleView(DetailView):
+    model = models.Circle
+    template_name = 'user/circle.html'
+
+    def get_object(self, pk=None):
+        return models.Circle.objects.get(pk=self.kwargs['pk'])

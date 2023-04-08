@@ -1,0 +1,133 @@
+{% extends 'core/base.html' %}
+
+{% block after %}
+<script data-plugins="transform-es2015-modules-umd" type='text/babel'>
+  import ReactMarkdown from 'ReactMarkdown';
+
+  class API {
+    static request(method, path, body, handlers) {
+      let xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if(this.readyState === 4) handlers[this.status](
+          this.status,
+          JSON.parse(xhr.responseText),
+        );
+      };
+      xhr.open(method, path, true);
+
+      if(method === 'post') {
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("X-CSRFToken", Cookie.get('csrftoken'));
+      }
+
+      xhr.send(body);
+    }
+
+    static get(path, handlers) {
+      return API.request('get', path, '', handlers);
+    }
+
+    static post(path, parameters, handlers) {
+      return API.request('post', path, JSON.stringify(parameters), handlers);
+    }
+  }
+
+  class EditableMarkdownArea extends React.Component {
+    constructor(props) {
+      super(props);
+
+      let initLength = this.props.content ? this.props.content.length : 0;
+
+      this.state = {
+        editing: false,
+        length: initLength,
+      };
+    }
+
+    render() {
+      if(this.state.editing) {
+        let onSubmit = e => {
+          e.preventDefault();
+
+          let value = e.target.querySelector('textarea').value;
+
+          if(value.length > this.props.maxLength) {
+            return;
+          }
+
+          this.props.onEdit(value);
+          this.setState({ editing: false });
+        };
+
+        let onChange = e => this.setState({ length: e.target.value.length });
+
+        return <section>
+          <form onSubmit={onSubmit}>
+            <textarea defaultValue={this.props.content} onChange={onChange}></textarea>
+            <CharacterCounter current={this.state.length} max={this.props.maxLength}/>
+            <input type='submit' value='Save'></input>
+          </form>
+        </section>;
+      }
+
+      let performEdit = () => this.setState({ editing: true });
+
+      if(this.props.content) {
+        return [
+          <section><ReactMarkdown>{ this.props.content }</ReactMarkdown></section>,
+          <a className='edit' onClick={performEdit}>{ 'Edit' }</a>,
+        ];
+      }
+      return [
+        <section className='empty'>{'(no description)'}</section>,
+        <a className='edit' onClick={performEdit}>{ 'Edit' }</a>,
+      ];
+    }
+  }
+
+  class GenerateInviteWidget extends React.Component {
+    constructor(props) {
+      super(props);
+
+      this.state = {
+        stage: 'editing',
+      }
+    }
+
+    render() {
+      if(this.state.stage === 'editing') {
+        let editInvitation = value => {
+          this.setState({ stage: 'generating' });
+        };
+        return <EditableMarkdownArea content={'Connect with me on Libre Social!'} maxLength={256} onEdit={editInvitation}/>;
+      }
+    }
+  }
+
+  ReactDOM.createRoot(
+    document.querySelector('#generate-invite')
+  ).render(
+    <GenerateInviteWidget />
+  );
+</script>
+{% endblock %}
+
+{% block main %}
+  {% if request.user.is_authenticated %}
+    <editable-h1>{{ object.name }}</editable-h1>
+    <h1>{{ object.name }}</h1>
+
+    {% for connection in object.connections.all %}
+      <section>{{ connection.connection.profile.name }}</section>
+      {% empty %}
+      <section>
+        <p>There aren't any connections in this circle.</p>
+        <p>Generate an invite link to get started!</p>
+      </section>
+    {% endfor %}
+
+    <section id='generate-invite'></section>
+  {% else %}
+    Log in to view your circles
+  {% endif %}
+{% endblock %}
