@@ -114,8 +114,9 @@
 
 {% block main %}
   {% if request.user.is_authenticated %}
-    <editable-h1>{{ object.name }}</editable-h1>
-    <h1>{{ object.name }}</h1>
+    <editable-header
+      depth='1'
+      max-length='256'>{{ object.name }}</editable-header>
 
     {% for connection in object.connections.all %}
       <section>{{ connection.connection.profile.name }}</section>
