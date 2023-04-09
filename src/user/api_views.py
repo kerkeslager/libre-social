@@ -20,3 +20,17 @@ def delete_view(request):
         return Response({'deleted': True})
 
     return Response({'deleted': False})
+
+class CircleViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.CircleSerializer
+
+    def get_queryset(self):
+        return self.request.user.circles.all()
+
+    def get_object(self):
+        return self.get_queryset().get(pk=self.kwargs['pk'])
+
+circle_view = CircleViewSet.as_view({
+    'get': 'retrieve',
+    'post': 'partial_update',
+})

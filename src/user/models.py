@@ -72,20 +72,3 @@ class Circle(models.Model):
     def get_absolute_url(self):
         from django.urls import reverse
         return reverse('circle', kwargs={'pk' : self.pk})
-
-class Connection(models.Model):
-    id = models.UUIDField(
-        primary_key = True,
-        default = uuid.uuid4,
-        editable = False,
-    )
-    circle = models.ForeignKey(
-        Circle,
-        on_delete=models.CASCADE,
-        related_name='connections',
-    )
-    connection = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='reversed_connections',
-    )

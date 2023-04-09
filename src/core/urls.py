@@ -24,6 +24,6 @@ urlpatterns = [
     path('auth/register', views.RegisterView.as_view(), name='register'),
     path('auth/', include('django.contrib.auth.urls')),
     path('donate', views.DonateView.as_view(), name='donate'),
-    path('u/', include('user.urls')),
-    path('api/user/', include('user.api_urls', namespace='api')),
+    path('api/', include('user.api_urls', namespace='api')),
+    path('', include('user.urls')),
 ]
