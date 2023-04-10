@@ -45,49 +45,40 @@
 
   <p>{% trans "You can delete your account and all the data associated with it. <em>We really delete your data</em>, so this action is irreversible. Your account and/or data cannot be restored after deletion." %}</p>
 
-  <div id='delete'></div>
+  <form id='delete-form'>
+    <p>
+      <input type='checkbox'></input>
+      {% trans 'I understand that deleting my account is irreversible and it will be impossible to recover my data.' %}
+    </p>
+
+    <p>
+      {% trans 'Password:' %} <input type='password'></input>
+    </p>
+
+    <p>
+      <input type='submit' disabled='true' value='Delete'></input>
+    </p>
+  </form>
 </section>
 {% endblock %}
 
 {% block after %}
-<script type='text/babel'>
-  class DeleteForm extends React.Component {
-    constructor(props) {
-      super(props);
+<script type='text/javascript'>
+  let deleteForm = document.querySelector('#delete-form');
+  let understandCheckbox = deleteForm.querySelector('input[type=checkbox]');
+  let password = deleteForm.querySelector('input[type=password]');
+  let submitButton = deleteForm.querySelector('input[type=submit]');
 
-      this.state = {
-        understandChecked: false,
-        passwordLength: 0,
-      };
-    }
-
-    render() {
-      let toggleUnderstandChecked = e => {
-        this.setState({ understandChecked: e.target.checked });
-      };
-
-      let onPasswordChange = e => {
-        this.setState({ passwordLength: e.target.value.length });
-      };
-
-      let submitDisabled = (!this.state.understandChecked) || (this.state.passwordLength < 8);
-
-      let onSubmit = e => {
-        e.preventDefault();
-
-        if(submitDisabled) return;
-
-        console.log('TODO Delete account');
-      };
-
-      return <form onSubmit={onSubmit}>
-        <p><input type='checkbox' onChange={toggleUnderstandChecked}></input> { "{% trans 'I understand that deleting my account is irreversible and it will be impossible to recover my data.' %}" }</p>
-        <p>{% trans 'Password' %}: <input type='password' onChange={onPasswordChange}></input></p>
-        <p><input type='submit' disabled={submitDisabled} value='{% trans "Delete" %}'></input></p>
-      </form>;
-    }
+  let updateDisabled = () => {
+    submitButton.disabled = !(understandCheckbox.checked) || (password.value.length < 8);
   }
 
-  ReactDOM.createRoot(document.querySelector('#delete')).render(<DeleteForm/>);
+  understandCheckbox.addEventListener('input', updateDisabled);
+  password.addEventListener('input', updateDisabled);
+  deleteForm.addEventListener('submit', e => {
+    e.preventDefault();
+    if(submitButton.disabled) return;
+    console.log('TODO: Delete user');
+  });
 </script>
 {% endblock %}

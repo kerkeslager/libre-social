@@ -5,7 +5,7 @@
     {% for circle in request.user.circles.all %}
       <a href='{{ circle.get_absolute_url }}'>
         <div style='display: flex; align-items: center; gap: 1rem;'>
-          <div style='border-radius: 50%; border: 1rem solid #{{circle.color}}; width: 7rem; height: 7rem;'></div>
+          <circle-icon style='border-color: #{{circle.color}};'></circle-icon>
           <h2>{{ circle.name }}</h2>
         </div>
       </a>

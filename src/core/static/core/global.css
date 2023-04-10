@@ -21,6 +21,15 @@ textarea {
   font-family: 'Work Sans', sans-serif;
 }
 
+header, footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+
+
 a.edit {
   font-size: 18px;
 }
@@ -38,7 +47,7 @@ html, body {
   align-items: center;
 }
 
-html, body, h1, h2, h3, h4, h5, p {
+html, body, h1, h2, h3, h4, h5, p, form {
   margin: 0;
   padding: 0;
 }
@@ -71,15 +80,8 @@ a:visited {
   transition: 200ms ease-in-out;
 }
 
-h1 form {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-}
-
-h1 form input[type=text ] {
-  height: 57px;
+textarea:focus, input:focus{
+  outline: none;
 }
 
 section {
@@ -112,7 +114,9 @@ textarea {
   border-radius: 0.75rem;
   padding: 0.5rem 0.75rem;
   width: 30rem;
-  height: calc(30rem / 1.618); /* golden ratio */
+  height: min-content;
+  min-height: 6rem;
+  max-height: calc(30rem / 1.618); /* golden ratio */
 }
 
 button, input[type=submit] {

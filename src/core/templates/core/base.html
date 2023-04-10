@@ -18,40 +18,11 @@
     <link rel='stylesheet'
           href='{% static "core/base.css" %}' />
     <link rel='stylesheet'
-          href='{% static "core/style.css" %}' />
+          href='{% static "core/component.css" %}' />
+
+    <script src='https://unpkg.com/commonmark@0.30.0/dist/commonmark.js' crossorigin></script>
 
     <script src='{% static "core/components.js" %}' type='module'></script>
-
-    {% comment %}
-    {% if DEBUG %}
-      <script src='https://unpkg.com/react@18.2.0/umd/react.development.js' crossorigin></script>
-      <script src='https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js' crossorigin></script>
-    {% else %}
-      <script src='https://unpkg.com/react@18.2.0/umd/react.production.min.js' crossorigin></script>
-      <script src='https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js' crossorigin></script>
-    {% endif %}
-
-    <script src='https://unpkg.com/babel-standalone@6.26.0/babel.min.js' crossorigin></script>
-
-    <script data-plugins="transform-es2015-modules-umd"
-            src='https://unpkg.com/react-markdown@8.0.2/react-markdown.min.js' crossorigin></script>
-    {% endcomment %}
-
-    <style>
-      .character-counter {
-        font-size: 24px;
-        font-weight: normal;
-      }
-
-      .character-counter.close {
-        color: #DDBB00;
-      }
-
-      .character-counter.over {
-        color: #CC0000;
-      }
-    </style>
-
   </head>
 
   <body>
