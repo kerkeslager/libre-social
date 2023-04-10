@@ -54,12 +54,77 @@ class API {
 class Component extends HTMLElement {
   constructor() {
     super();
+    this.state = {};
+  }
 
-    this.content = [];
-    for(let i; i < this.childNodes.length; i++) {
-      this.content.append(this.childNodes[i]);
+  applyRender() {
+    let render = this.render();
+
+    this.innerText = '';
+
+    if(render instanceof HTMLElement) {
+      this.appendChild(render);
+    } else if(render instanceof Array) {
+      for(let i = 0; i < render.length; i++) {
+        this.appendChild(render[i]);
+      }
+    } else if(typeof(render) === 'string') {
+      this.innerHTML = render;
     }
-    this.contentHTML = this.innerHTML;
+  }
+
+  connectedCallback() {
+    this.applyRender();
+  }
+
+  setState(newState) {
+    Object.keys(newState).forEach(k => {
+      this.state[k] = newState[k];
+    });
+
+    this.applyRender();
+  }
+}
+
+class APIObjectComponent extends Component {
+  constructor() {
+    super();
+    this.state = {
+      object: null,
+    };
+
+    API.get(this.getAttribute('path'), {
+      200: (status, data) => this.setState({ object: data }),
+    });
+  }
+}
+
+class CircleView extends APIObjectComponent {
+  render() {
+    if(this.state.object === null) return '';
+
+    let result = [];
+
+    result.push(document.createElement(
+      'editable-header',
+      {
+        depth: 1,
+        maxLength: 256,
+        value: this.state.object.name,
+        onSave: value => API.post(
+          this.getAttribute('path'),
+          { name: value },
+          {
+            200: (status, data) => {
+              this.setState({ object: data });
+            },
+          }
+        )
+      },
+    ));
+
+
+    return result;
   }
 }
 
@@ -67,44 +132,64 @@ class EditableHeader extends Component {
   constructor() {
     super();
 
-    let depth = this.getAttribute('depth');
-    let maxLength = this.getAttribute('max-length');
-
-    this.showHeader();
+    this.state = {
+      editing: false,
+    };
   }
 
-  showHeader() {
-    let depth = this.getAttribute('depth');
+  render() {
+    if(this.state.editing) {
+      let input = document.createElement(
+        'input',
+        {
+          type: 'text',
+          value: this.getAttribute('value'),
+        }
+      );
 
-    this.innerHTML = `
-      <header>
-        <h${ depth }>${ this.contentHTML }</h${ depth }>
-        <a href='#' class='edit'>Edit</a>
-      </header>
-    `;
+      let submit = document.createElement(
+        'input',
+        {
+          type: 'submit',
+          value: 'Save',
+        },
+      );
 
-    this.querySelector('.edit').addEventListener('click', e => {
-      e.preventDefault();
-      this.showForm();
-    });
-  }
+      let result = document.createElement(
+        'form',
+        {
+          onSubmit: e => {
+            e.preventDefault();
+            this.setState({ editing: false });
+          },
+        }
+      );
+      result.appendChild(input);
+      result.appendChild(submit);
+      return result;
+    } else {
+      let h = document.createElement(`h${ this.getAttribute('depth') }`);
+      h.appendChild(new Text(this.getAttribute('value')));
 
-  showForm() {
-    let maxLength = this.getAttribute('max-length');
+      let editButton = document.createElement(
+        'a',
+        {
+          href: '',
+          className: 'edit',
+          onClick: e => {
+            e.preventDefault();
+            this.setState({ editing: true });
+          },
+        }
+      );
 
-    this.innerHTML = `
-      <form>
-        <input type='text' value='${ this.contentHTML }' />
-        <span>${ this.contentHTML.length }/${ maxLength }</span>
-        <input type='submit' value='Save'>
-      </form>
-    `;
-
-    this.querySelector('form').addEventListener('submit', e => {
-      e.preventDefault();
-      this.showHeader();
-    });
+      let result = document.createElement('header');
+      result.appendChild(h);
+      result.appendChild(editButton);
+      return result;
+    }
   }
 }
 
+customElements.define('circle-view', CircleView);
 customElements.define('editable-header', EditableHeader);
