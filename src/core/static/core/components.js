@@ -60,7 +60,7 @@ class Component extends HTMLElement {
   applyRender() {
     let render = this.render();
 
-    this.innerText = '';
+    this.textContent = '';
 
     if(render instanceof HTMLElement) {
       this.appendChild(render);
@@ -103,28 +103,22 @@ class CircleView extends APIObjectComponent {
   render() {
     if(this.state.object === null) return '';
 
-    let result = [];
 
-    result.push(document.createElement(
-      'editable-header',
+    let editableHeader = document.createElement('editable-header');
+    editableHeader.setAttribute('depth', 1);
+    editableHeader.setAttribute('maxLength', 256);
+    editableHeader.setAttribute('value', this.state.object.name);
+    editableHeader.setAttribute('onSave', value => API.post(
+      this.getAttribute('path'),
+      { name: value },
       {
-        depth: 1,
-        maxLength: 256,
-        value: this.state.object.name,
-        onSave: value => API.post(
-          this.getAttribute('path'),
-          { name: value },
-          {
-            200: (status, data) => {
-              this.setState({ object: data });
-            },
-          }
-        )
-      },
+        200: (status, data) => {
+          this.setState({ object: data });
+        },
+      }
     ));
 
-
-    return result;
+    return [editableHeader];
   }
 }
 
@@ -137,56 +131,42 @@ class EditableHeader extends Component {
     };
   }
 
+  static get observedAttributes() {
+    return ['depth', 'maxLength', 'onSave', 'value'];
+  }
+
   render() {
     if(this.state.editing) {
-      let input = document.createElement(
-        'input',
-        {
-          type: 'text',
-          value: this.getAttribute('value'),
-        }
-      );
+      let input = document.createElement('input');
+      input.setAttribute('type', 'text');
+      input.setAttribute('value', this.getAttribute('value'));
 
-      let submit = document.createElement(
-        'input',
-        {
-          type: 'submit',
-          value: 'Save',
-        },
-      );
+      let submit = document.createElement('input');
+      submit.setAttribute('type', 'submit');
+      submit.setAttribute('value', 'Save');
 
-      let result = document.createElement(
-        'form',
-        {
-          onSubmit: e => {
-            e.preventDefault();
-            this.setState({ editing: false });
-          },
-        }
-      );
+      let result = document.createElement('form');
+      result.addEventListener('submit', e => {
+        e.preventDefault();
+        this.setState({ editing: false });
+      });
       result.appendChild(input);
       result.appendChild(submit);
       return result;
     } else {
       let h = document.createElement(`h${ this.getAttribute('depth') }`);
-      h.appendChild(new Text(this.getAttribute('value')));
+      h.textContent = this.getAttribute('value');
 
-      let editButton = document.createElement(
-        'a',
-        {
-          href: '',
-          className: 'edit',
-          onClick: e => {
-            e.preventDefault();
-            this.setState({ editing: true });
-          },
-        }
-      );
+      let editButton = document.createElement('a');
+      editButton.setAttribute('href', '');
+      editButton.setAttribute('class', 'edit');
+      editButton.addEventListener('click', e => {
+        e.preventDefault();
+        this.setState({ editing: true });
+      });
+      editButton.textContent = 'Edit';
 
-      let result = document.createElement('header');
-      result.appendChild(h);
-      result.appendChild(editButton);
-      return result;
+      return [h, editButton];
     }
   }
 }

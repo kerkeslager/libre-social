@@ -17,6 +17,7 @@
 
     <script src='{% static "core/components.js" %}' type='module'></script>
 
+    {% comment %}
     {% if DEBUG %}
       <script src='https://unpkg.com/react@18.2.0/umd/react.development.js' crossorigin></script>
       <script src='https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js' crossorigin></script>
@@ -29,6 +30,7 @@
 
     <script data-plugins="transform-es2015-modules-umd"
             src='https://unpkg.com/react-markdown@8.0.2/react-markdown.min.js' crossorigin></script>
+    {% endcomment %}
 
     <style>
       html {
