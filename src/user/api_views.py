@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -33,4 +35,32 @@ class CircleViewSet(viewsets.ModelViewSet):
 circle_view = CircleViewSet.as_view({
     'get': 'retrieve',
     'post': 'partial_update',
+    'delete': 'destroy',
+})
+
+# TODO Limit viewing the list and editing to the owner
+class InviteViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.InviteSerializer
+
+    def get_queryset(self):
+        return self.request.user.invites.all()
+
+    def get_object(self):
+        return models.Invite.objects.get(
+            pk=self.kwargs['pk'],
+            expiration_utc__gt=datetime.now(timezone.utc),
+        )
+
+    def perform_create(self, serializer):
+        # TODO Validate that the circle is owned by the owner
+        serializer.save(owner=self.request.user)
+
+invite_detail_view = InviteViewSet.as_view({
+    'get': 'retrieve',
+    'post': 'partial_update',
+    'delete': 'destroy',
+})
+invite_list_view = InviteViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
 })

@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import uuid
 
 from django.contrib.auth.models import User
@@ -63,6 +64,11 @@ class Circle(models.Model):
         related_name='circles',
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'owner'], name='unique_circle_name_per_owner'),
+        ]
+
     def __str__(self):
         return "{}'s {} Circle".format(
             self.owner.username,
@@ -72,3 +78,31 @@ class Circle(models.Model):
     def get_absolute_url(self):
         from django.urls import reverse
         return reverse('circle', kwargs={'pk' : self.pk})
+
+class Invite(models.Model):
+    id = models.UUIDField(
+        primary_key = True,
+        default = uuid.uuid4,
+        editable = False,
+    )
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='invites',
+    )
+    circle = models.ForeignKey(
+        Circle,
+        on_delete=models.CASCADE,
+        related_name='invites',
+    )
+    message = models.CharField(max_length=1024, null=True, blank=True)
+    expiration_utc = models.DateTimeField(null=True)
+    is_single_use = models.BooleanField(default=True, null=False)
+
+    @property
+    def owner_name(self):
+        return self.owner.name
+
+    @property
+    def is_expired(self):
+        return datetime.now(timezone.utc)

@@ -7,4 +7,5 @@ urlpatterns = [
     path('u/settings', views.SettingsView.as_view(), name='settings'),
     path('u/<uuid:pk>', views.ProfileView.as_view(), name='profile'),
     path('c/<uuid:pk>', views.CircleView.as_view(), name='circle'),
+    path('i/<uuid:pk>', views.InviteView.as_view(), name='invite'),
 ]

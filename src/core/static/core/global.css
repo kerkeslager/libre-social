@@ -156,3 +156,15 @@ button:enabled:hover, input[type=submit]:enabled:hover {
 .errorlist {
   color: #CC0000;
 }
+
+section.qr-code {
+  align-self: center;
+  width: 100%;
+  max-width: 20rem;
+  border: 2px solid black;
+}
+
+section.qr-code svg {
+  width: 100%;
+  padding: 0;
+}
