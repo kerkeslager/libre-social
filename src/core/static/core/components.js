@@ -27,16 +27,26 @@ class API {
   static request(method, path, body, handlers) {
     let xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
-      if(this.readyState === 4) handlers[this.status](
-        this.status,
-        JSON.parse(xhr.responseText),
-      );
+      if(this.readyState === 4) {
+        let responseContent = {};
+
+        if(xhr.responseText.length > 0) {
+          responseContent = JSON.parse(xhr.responseText);
+        }
+
+        handlers[this.status](this.status, responseContent);
+      }
     };
     xhr.open(method, path, true);
 
-    if(method === 'post') {
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.setRequestHeader("X-CSRFToken", Cookie.get('csrftoken'));
+    switch(method) {
+      case 'delete':
+      case 'patch':
+      case 'post':
+      case 'put':
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("X-CSRFToken", Cookie.get('csrftoken'));
+      default:
     }
 
     xhr.send(body);
@@ -48,6 +58,10 @@ class API {
 
   static post(path, parameters, handlers) {
     return API.request('post', path, JSON.stringify(parameters), handlers);
+  }
+
+  static _delete(path, handlers) {
+    return API.request('delete', path, '', handlers);
   }
 }
 
@@ -165,7 +179,21 @@ class InviteOwnerView extends APIObjectComponent {
       },
     ));
 
-    return [message];
+    let deleteForm = document.createElement('delete-form');
+    deleteForm.setAttribute('deleteMessage', 'Delete Invite');
+    deleteForm.setAttribute('confirmationMessage', 'Are you sure?');
+    deleteForm.addEventListener('confirm', () => {
+      API._delete(
+        this.getAttribute('path'),
+        {
+          204: (status, data) => {
+            window.location.href = '/';
+          },
+        },
+      );
+    });
+
+    return [message, deleteForm];
   }
 }
 
@@ -200,6 +228,44 @@ class ProfileView extends APIObjectComponent {
     ));
 
     return [heading, description];
+  }
+}
+
+class DeleteForm extends Component {
+  constructor() {
+    super();
+    this.state = {
+      confirming: false
+    }
+  }
+
+  render() {
+    if(this.state.confirming) {
+      let confirmButton = document.createElement('button');
+      confirmButton.textContent = 'Delete';
+      confirmButton.addEventListener('click', () => {
+        this.dispatchEvent(new Event('confirm'));
+      });
+
+      let cancelButton = document.createElement('button');
+      cancelButton.textContent = 'Cancel';
+      cancelButton.addEventListener('click', () => {
+        this.setState({ confirming: false });
+      });
+
+      return [
+        new Text(this.getAttribute('confirmationMessage')),
+        confirmButton,
+        cancelButton,
+      ];
+    } else {
+      let deleteButton = document.createElement('button');
+      deleteButton.textContent = this.getAttribute('deleteMessage');
+      deleteButton.addEventListener('click', () => {
+        this.setState({ confirming: true });
+      });
+      return deleteButton;
+    }
   }
 }
 
@@ -396,6 +462,7 @@ class EditableH5 extends EditableHeading {
 customElements.define('circle-icon', CircleIcon);
 customElements.define('character-counter', CharacterCounter);
 customElements.define('commonmark-renderer', CommonmarkRenderer);
+customElements.define('delete-form', DeleteForm);
 customElements.define('editable-commonmark-area', EditableCommonmarkArea);
 customElements.define('editable-h1', EditableH1);
 customElements.define('editable-h2', EditableH2);

@@ -7,6 +7,15 @@ circle-icon {
   height: 7rem;
 }
 
+delete-form {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 1rem;
+}
+
 editable-h1,
 editable-h2,
 editable-h3,
