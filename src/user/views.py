@@ -44,7 +44,9 @@ class InviteView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        url = pyqrcode.create('https://kerkeslager.com/i/ff099631-7d32-4efd-be0d-40f6d10c390a')
+        url = pyqrcode.create(
+            self.request.build_absolute_uri()
+        )
         buffer = io.BytesIO()
         url.svg(buffer, omithw=True)
         qr_svg = buffer.getvalue().decode('utf-8')
