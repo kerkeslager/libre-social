@@ -46,11 +46,14 @@ editable-h5 input[type=text] {
   flex-shrink: 1;
 }
 
+circle-view,
+invite-owner-view,
 profile-view {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
+  width: 100%;
 }
 
 commonmark-renderer {
@@ -65,13 +68,17 @@ editable-commonmark-area {
   flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
+  width: 100%;
 }
 
 editable-commonmark-area form {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 1rem;
+  width: 100%;
 }
 
 character-counter {

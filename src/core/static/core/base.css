@@ -73,7 +73,7 @@ body > header {
 }
 
 body > main {
-  padding: 78.5px 1rem calc(78.5px + 1rem) 1rem;
+  padding: 78.5px 0 calc(78.5px + 1rem) 0;
 }
 
 body > footer {

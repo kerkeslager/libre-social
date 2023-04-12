@@ -222,7 +222,7 @@ class EditableCommonmarkArea extends Component {
       input.value = this.getAttribute('commonmark');
       input.addEventListener('input', () => {
         input.style.height = 0;
-        input.style.height = `calc(${ input.scrollHeight }px - 1rem)`;
+        input.style.height = `calc(${ input.scrollHeight }px)`;
       });
 
       setTimeout(() => {

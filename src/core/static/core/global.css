@@ -113,8 +113,9 @@ textarea {
   border: 2px solid black;
   border-radius: 0.75rem;
   padding: 0.5rem 0.75rem;
-  width: 30rem;
+  width: 100%;
   height: min-content;
+  box-sizing: border-box;
   min-height: 6rem;
   max-height: calc(30rem / 1.618); /* golden ratio */
 }
