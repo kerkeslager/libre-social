@@ -148,6 +148,27 @@ class CircleView extends APIObjectComponent {
   }
 }
 
+class InviteOwnerView extends APIObjectComponent {
+  render() {
+    if(this.state.object === null) return null;
+
+    let message = document.createElement('editable-commonmark-area');
+    message.setAttribute('maxLength', 1024);
+    message.setAttribute('commonmark', this.state.object.message);
+    message.addEventListener('save', e => API.post(
+      this.getAttribute('path'),
+      { message: e.detail.commonmark },
+      {
+        200: (status, data) => {
+          this.setState({ object: data });
+        },
+      },
+    ));
+
+    return [message];
+  }
+}
+
 class ProfileView extends APIObjectComponent {
   render() {
     if(this.state.object === null) return null;
@@ -383,4 +404,5 @@ customElements.define('editable-h4', EditableH4);
 customElements.define('editable-h5', EditableH5);
 
 customElements.define('circle-view', CircleView);
+customElements.define('invite-owner-view', InviteOwnerView);
 customElements.define('profile-view', ProfileView);

@@ -48,12 +48,14 @@ class InviteViewSet(viewsets.ModelViewSet):
     def get_object(self):
         return models.Invite.objects.get(
             pk=self.kwargs['pk'],
-            expiration_utc__gt=datetime.now(timezone.utc),
         )
 
     def perform_create(self, serializer):
         # TODO Validate that the circle is owned by the owner
-        serializer.save(owner=self.request.user)
+        serializer.save(
+            owner=self.request.user,
+            expiration_utc=datetime.now(timezone.utc) + timedelta(days=7),
+        )
 
 invite_detail_view = InviteViewSet.as_view({
     'get': 'retrieve',

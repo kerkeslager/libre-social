@@ -8,13 +8,15 @@
         {{ qr }}
       </section>
 
+      <invite-owner-view path='{% url "api:invite-detail" pk=object.pk %}'>
+      </invite-owner-view>
+
       <h1>TODO</h1>
       <ul>
         <li>Edit which circle invite points to</li>
         <li>Edit message</li>
-        {% if object.is_expired %}
-          <li>Extend invite expiration</li>
-        {% endif %}
+        <li>Expire invites</li>
+        <li>Extend invite expiration</li>
         <li>Delete invite</li>
       </ul>
     {% else %}
